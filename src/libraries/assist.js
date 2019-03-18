@@ -22,8 +22,31 @@ const msgHandlers = {
   tokenToTokenTransferOutput: txTransferMsg,
   addLiquidity: txLiquidityMsg,
   removeLiquidity: txLiquidityMsg,
-  createExchange: txExchangeMsg
+  createExchange: txExchangeMsg,
+  approve: txApproveMsg
 };
+
+function txApproveMsg(eventCode, data) {
+  const { 
+    parameters,
+    exchangeAddresses,
+  } = getTxInfo(data);
+
+  const token = findTicker(parameters[0], exchangeAddresses.addresses);
+
+  switch(eventCode) {
+    case 'txSent':
+      return `Sending transaction to unlock ${token}`;
+    case 'txPending':
+      return `Your transaction to unlock ${token} is pending!`;
+    case 'txConfirmed':
+      return `${token} has been successfully unlocked. Woohoo!`;
+    case 'txFailed':
+      return `Uh oh something went wrong unlocking ${token}. Please try again later.`;
+    default:
+      return undefined;
+  }
+}
 
 function txExchangeMsg(eventCode, data) {
   const { 

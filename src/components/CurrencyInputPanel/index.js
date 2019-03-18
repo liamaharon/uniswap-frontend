@@ -13,6 +13,7 @@ import { selectors, addPendingTx } from "../../ducks/web3connect";
 import { addApprovalTx } from "../../ducks/pending";
 import { addExchange } from "../../ducks/addresses";
 import { BigNumber as BN } from 'bignumber.js';
+import { decorateContract } from '../../libraries/assist';
 
 import './currency-panel.scss';
 
@@ -130,7 +131,7 @@ class CurrencyInputPanel extends Component {
     if (web3 && web3.utils && web3.utils.isAddress(searchQuery)) {
       const tokenAddress = searchQuery;
       const { label } = selectors().getBalance(account, tokenAddress);
-      const factory = new web3.eth.Contract(FACTORY_ABI, factoryAddress);
+      const factory = decorateContract(new web3.eth.Contract(FACTORY_ABI, factoryAddress));
       const exchangeAddress = fromToken[tokenAddress];
 
       if (!exchangeAddress) {
@@ -288,7 +289,7 @@ class CurrencyInputPanel extends Component {
       <button
         className='currency-input-panel__sub-currency-select'
         onClick={() => {
-          const contract = new web3.eth.Contract(ERC20_ABI, selectedTokenAddress);
+          const contract = decorateContract(new web3.eth.Contract(ERC20_ABI, selectedTokenAddress));
           const amount = BN(10 ** decimals).multipliedBy(10 ** 8).toFixed(0);
           contract.methods.approve(fromToken[selectedTokenAddress], amount)
             .send({ from: account }, (err, data) => {

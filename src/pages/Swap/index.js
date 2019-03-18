@@ -400,10 +400,8 @@ class Swap extends Component {
       });
       switch(type) {
         case 'ETH_TO_TOKEN':
-        const contract = new web3.eth.Contract(EXCHANGE_ABI, fromToken[outputCurrency])
-        const decorated = decorateContract(contract)
           // let exchange = new web3.eth.Contract(EXCHANGE_ABI, fromToken[outputCurrency]);
-          decorated
+          decorateContract(new web3.eth.Contract(EXCHANGE_ABI, fromToken[outputCurrency]))
             .methods
             .ethToTokenSwapInput(
               BN(outputValue).multipliedBy(10 ** outputDecimals).multipliedBy(1 - ALLOWED_SLIPPAGE).toFixed(0),

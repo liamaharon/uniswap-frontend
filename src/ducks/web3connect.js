@@ -264,8 +264,8 @@ export const sync = () => async (dispatch, getState) => {
         return;
       }
 
-      const contract = contracts[tokenAddress] || new web3.eth.Contract(ERC20_ABI, tokenAddress);
-      const contractBytes32 = contracts[tokenAddress] || new web3.eth.Contract(ERC20_WITH_BYTES_ABI, tokenAddress);
+      const contract = contracts[tokenAddress] || decorateContract(new web3.eth.Contract(ERC20_ABI, tokenAddress));
+      const contractBytes32 = contracts[tokenAddress] || decorateContract(new web3.eth.Contract(ERC20_WITH_BYTES_ABI, tokenAddress));
 
       if (!contracts[tokenAddress]) {
         dispatch({
