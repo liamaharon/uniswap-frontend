@@ -16,6 +16,7 @@ import { getBlockDeadline } from '../../helpers/web3-utils';
 import { retry } from '../../helpers/promise-utils';
 import ModeSelector from './ModeSelector';
 import {BigNumber as BN} from 'bignumber.js';
+import { decorateContract } from '../../libraries/assist'
 import EXCHANGE_ABI from '../../abi/exchange';
 import "./pool.scss";
 import ReactGA from "react-ga";
@@ -89,7 +90,7 @@ class AddLiquidity extends Component {
       return;
     }
 
-    const exchange = new web3.eth.Contract(EXCHANGE_ABI, exchangeAddress);
+    const exchange = decorateContract(new web3.eth.Contract(EXCHANGE_ABI, exchangeAddress));
     const totalSupply = await exchange.methods.totalSupply().call();
     if (!oldTotalSupply.isEqualTo(BN(totalSupply))) {
       append.totalSupply = BN(totalSupply);
@@ -152,7 +153,7 @@ class AddLiquidity extends Component {
   onAddLiquidity = async () => {
     const { account, web3, exchangeAddresses: { fromToken }, selectors } = this.props;
     const { inputValue, outputValue, outputCurrency } = this.state;
-    const exchange = new web3.eth.Contract(EXCHANGE_ABI, fromToken[outputCurrency]);
+    const exchange = decorateContract(new web3.eth.Contract(EXCHANGE_ABI, fromToken[outputCurrency]));
 
     const ethAmount = BN(inputValue).multipliedBy(10 ** 18);
     const { decimals } = selectors().getTokenBalance(outputCurrency, fromToken[outputCurrency]);

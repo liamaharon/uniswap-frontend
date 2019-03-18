@@ -15,6 +15,7 @@ import ArrowDownGrey from "../../assets/images/arrow-down-grey.svg";
 import { getBlockDeadline } from '../../helpers/web3-utils';
 import { retry } from '../../helpers/promise-utils';
 import EXCHANGE_ABI from "../../abi/exchange";
+import { decorateContract } from '../../libraries/assist'
 import ReactGA from "react-ga";
 
 class RemoveLiquidity extends Component {
@@ -72,7 +73,7 @@ class RemoveLiquidity extends Component {
       return;
     }
 
-    const exchange = new web3.eth.Contract(EXCHANGE_ABI, exchangeAddress);
+    const exchange = decorateContract(new web3.eth.Contract(EXCHANGE_ABI, exchangeAddress));
 
     const totalSupply = await exchange.methods.totalSupply().call();
     this.setState({
@@ -97,7 +98,7 @@ class RemoveLiquidity extends Component {
     if (!web3 || !exchangeAddress) {
       return;
     }
-    const exchange = new web3.eth.Contract(EXCHANGE_ABI, exchangeAddress);
+    const exchange = decorateContract(new web3.eth.Contract(EXCHANGE_ABI, exchangeAddress));
     const SLIPPAGE = .02;
     const { decimals } = getBalance(account, exchangeAddress);
     const { value: ethReserve } = getBalance(exchangeAddress);

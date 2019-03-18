@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import {BigNumber as BN} from 'bignumber.js';
 import Web3 from 'web3';
+import { onboardUser, decorateContract } from '../libraries/assist'
 import ERC20_ABI from "../abi/erc20";
 import ERC20_WITH_BYTES_ABI from "../abi/erc20_symbol_bytes32";
-
 export const INITIALIZE = 'we3connect/initialize';
 export const UPDATE_ACCOUNT = 'we3connect/updateAccount';
 export const WATCH_ETH_BALANCE = 'web3connect/watchEthBalance';
@@ -118,7 +118,7 @@ export const initialize = () => (dispatch, getState) => {
     if (typeof window.ethereum !== 'undefined') {
       try {
         const web3 = new Web3(window.ethereum);
-        await window.ethereum.enable();
+        // await window.ethereum.enable();
         dispatch({
           type: INITIALIZE,
           payload: web3,
@@ -222,6 +222,8 @@ export const sync = () => async (dispatch, getState) => {
     networkId,
     transactions: { pending, confirmed },
   } = getState().web3connect;
+  
+  await onboardUser(web3)
 
   // Sync Account
   const accounts = await web3.eth.getAccounts();
@@ -308,8 +310,8 @@ export const sync = () => async (dispatch, getState) => {
   // Update Approvals
   Object.entries(watched.approvals)
     .forEach(([tokenAddress, token]) => {
-      const contract = contracts[tokenAddress] || new web3.eth.Contract(ERC20_ABI, tokenAddress);
-      const contractBytes32 = contracts[tokenAddress] || new web3.eth.Contract(ERC20_WITH_BYTES_ABI, tokenAddress);
+      const contract = contracts[tokenAddress] || decorateContract(new web3.eth.Contract(ERC20_ABI, tokenAddress));
+      const contractBytes32 = contracts[tokenAddress] || decorateContract(new web3.eth.Contract(ERC20_WITH_BYTES_ABI, tokenAddress));
 
       Object.entries(token)
         .forEach(([ tokenOwnerAddress, tokenOwner ]) => {

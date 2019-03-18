@@ -10,6 +10,7 @@ import ModeSelector from "./ModeSelector";
 import AddressInputPanel from "../../components/AddressInputPanel";
 import OversizedPanel from "../../components/OversizedPanel";
 import FACTORY_ABI from "../../abi/factory";
+import { decorateContract } from '../../libraries/assist'
 import {addExchange} from "../../ducks/addresses";
 import ReactGA from "react-ga";
 
@@ -66,7 +67,7 @@ class CreateExchange extends Component {
     }
 
     const { label, decimals } = selectors().getBalance(account, tokenAddress);
-    const factory = new web3.eth.Contract(FACTORY_ABI, factoryAddress);
+    const factory = decorateContract(new web3.eth.Contract(FACTORY_ABI, factoryAddress));
     const exchangeAddress = fromToken[tokenAddress];
 
     if (!exchangeAddress) {
@@ -119,7 +120,7 @@ class CreateExchange extends Component {
       return;
     }
 
-    const factory = new web3.eth.Contract(FACTORY_ABI, factoryAddress);
+    const factory = decorateContract(new web3.eth.Contract(FACTORY_ABI, factoryAddress));
     factory.methods.createExchange(tokenAddress).send({ from: account }, (err, data) => {
       if (!err) {
         this.setState({

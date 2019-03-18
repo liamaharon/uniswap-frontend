@@ -144,7 +144,7 @@ class BlockingWarning extends Component {
 function Header (props) {
   return (
     <div className="header">
-      <BlockingWarning {...props} />
+      {/* <BlockingWarning {...props} /> */}
       <div
         className={classnames('header__top', {
           'header--inactive': !props.isConnected,

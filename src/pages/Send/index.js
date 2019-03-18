@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import {BigNumber as BN} from "bignumber.js";
 import { withNamespaces } from 'react-i18next';
+import { decorateContract } from '../../libraries/assist'
 import { selectors, addPendingTx } from '../../ducks/web3connect';
 import Header from '../../components/Header';
 import NavigationTabs from '../../components/NavigationTabs';
@@ -403,7 +404,7 @@ class Send extends Component {
       // send input
       switch(type) {
         case 'ETH_TO_TOKEN':
-          new web3.eth.Contract(EXCHANGE_ABI, fromToken[outputCurrency])
+          decorateContract(new web3.eth.Contract(EXCHANGE_ABI, fromToken[outputCurrency]))
             .methods
             .ethToTokenTransferInput(
               BN(outputValue).multipliedBy(10 ** outputDecimals).multipliedBy(1 - ALLOWED_SLIPPAGE).toFixed(0),
@@ -421,7 +422,7 @@ class Send extends Component {
             });
           break;
         case 'TOKEN_TO_ETH':
-          new web3.eth.Contract(EXCHANGE_ABI, fromToken[inputCurrency])
+          decorateContract(new web3.eth.Contract(EXCHANGE_ABI, fromToken[inputCurrency]))
             .methods
             .tokenToEthTransferInput(
               BN(inputValue).multipliedBy(10 ** inputDecimals).toFixed(0),
@@ -437,7 +438,7 @@ class Send extends Component {
             });
           break;
         case 'TOKEN_TO_TOKEN':
-          new web3.eth.Contract(EXCHANGE_ABI, fromToken[inputCurrency])
+          decorateContract(new web3.eth.Contract(EXCHANGE_ABI, fromToken[inputCurrency]))
             .methods
             .tokenToTokenTransferInput(
               BN(inputValue).multipliedBy(10 ** inputDecimals).toFixed(0),
@@ -467,7 +468,7 @@ class Send extends Component {
       });
       switch (type) {
         case 'ETH_TO_TOKEN':
-          new web3.eth.Contract(EXCHANGE_ABI, fromToken[outputCurrency])
+          decorateContract(new web3.eth.Contract(EXCHANGE_ABI, fromToken[outputCurrency]))
             .methods
             .ethToTokenTransferOutput(
               BN(outputValue).multipliedBy(10 ** outputDecimals).toFixed(0),
@@ -485,7 +486,7 @@ class Send extends Component {
             });
           break;
         case 'TOKEN_TO_ETH':
-          new web3.eth.Contract(EXCHANGE_ABI, fromToken[inputCurrency])
+          decorateContract(new web3.eth.Contract(EXCHANGE_ABI, fromToken[inputCurrency]))
             .methods
             .tokenToEthTransferOutput(
               BN(outputValue).multipliedBy(10 ** outputDecimals).toFixed(0),
@@ -505,7 +506,7 @@ class Send extends Component {
             return;
           }
 
-          new web3.eth.Contract(EXCHANGE_ABI, fromToken[inputCurrency])
+          decorateContract(new web3.eth.Contract(EXCHANGE_ABI, fromToken[inputCurrency]))
             .methods
             .tokenToTokenTransferOutput(
               BN(outputValue).multipliedBy(10 ** outputDecimals).toFixed(0),
