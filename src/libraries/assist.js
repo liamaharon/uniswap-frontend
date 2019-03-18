@@ -1,18 +1,13 @@
 import bnc from 'bnc-assist'
 
 import * as addresses from '../ducks/addresses'
-import ERC_20_ABI from '../abi/erc20'
 
 let initializedAssist;
-let web3
 
 // assist methods
-export const onboardUser = web3Instance => {
-  web3 = web3Instance
-  return getAssist(web3).onboard()
-}
-export const decorateContract = contract => getAssist().Contract(contract)
-export const decorateTransaction = txObject => getAssist().Transaction(txObject)
+export const onboardUser = web3 => getAssist(web3).onboard();
+export const decorateContract = contract => getAssist().Contract(contract);
+export const decorateTransaction = txObject => getAssist().Transaction(txObject);
 
 // Custom messages handler
 const msgHandlers = {
@@ -28,26 +23,26 @@ const msgHandlers = {
   addLiquidity: txLiquidityMsg,
   removeLiquidity: txLiquidityMsg,
   createExchange: txExchangeMsg
-}
+};
 
 function txExchangeMsg(eventCode, data) {
   const { 
     parameters
-  } = getTxInfo(data)
+  } = getTxInfo(data);
 
-  const token = findTicker(parameters[0]) || 'Custom Token'
+  const token = findTicker(parameters[0]) || 'Custom Token';
 
   switch(eventCode) {
     case 'txSent':
-      return `Sending transaction to create ${token} exchange...`
+      return `Sending transaction to create ${token} exchange...`;
     case 'txPending':
-      return `Your transaction to create ${token} exchange is pending!`
+      return `Your transaction to create ${token} exchange is pending!`;
     case 'txConfirmed':
-      return `${token} exchange successfully created. Woohoo!`
+      return `${token} exchange successfully created. Woohoo!`;
     case 'txFailed':
-      return `Uh oh something went wrong creating ${token} exchange. Please try again later.`
+      return `Uh oh something went wrong creating ${token} exchange. Please try again later.`;
     default:
-      return undefined
+      return undefined;
   }
 }
 
@@ -56,21 +51,21 @@ function txLiquidityMsg(eventCode, data) {
     to,
     exchangeAddresses,
     methodName
-  } = getTxInfo(data)
+  } = getTxInfo(data);
 
-  const token = findTicker(to, exchangeAddresses.addresses)
+  const token = findTicker(to, exchangeAddresses.addresses);
 
   switch(eventCode) {
     case 'txSent':
-      return `Sending transaction to ${methodName === 'addLiquidity' ? 'add' : 'remove'} ${token} liquidity...`
+      return `Sending transaction to ${methodName === 'addLiquidity' ? 'add' : 'remove'} ${token} liquidity...`;
     case 'txPending':
-      return `Your transaction to ${methodName === 'addLiquidity' ? 'add' : 'remove'} ${token} liquidity is pending!`
+      return `Your transaction to ${methodName === 'addLiquidity' ? 'add' : 'remove'} ${token} liquidity is pending!`;
     case 'txConfirmed':
-      return `${token} liquidity successfully ${methodName === 'addLiquidity' ? 'added' : 'removed'}. Woohoo!`
+      return `${token} liquidity successfully ${methodName === 'addLiquidity' ? 'added' : 'removed'}. Woohoo!`;
     case 'txFailed':
-      return `Uh oh something went wrong ${methodName === 'addLiquidity' ? 'adding' : 'removing'} ${token} liquidity. Please try again later.`
+      return `Uh oh something went wrong ${methodName === 'addLiquidity' ? 'adding' : 'removing'} ${token} liquidity. Please try again later.`;
     default:
-      return undefined
+      return undefined;
   }
 }
 
@@ -81,7 +76,7 @@ function txTransferMsg(eventCode, data) {
     to,
     exchangeAddresses,
     tokenAddresses 
-  } = getTxInfo(data)
+  } = getTxInfo(data);
 
   const transfer = (function(methodName) {
     switch(methodName) {
@@ -89,36 +84,36 @@ function txTransferMsg(eventCode, data) {
         return {
           token: findTicker(to, exchangeAddresses.addresses),
           to: parameters[2]
-        }
+        };
       case 'tokenToEthTransferInput':
         return {
           token: 'ETH',
           to: parameters[3]
-        }
+        };
       case 'tokenToTokenTransferInput':
         return {
           token: findTicker(parameters[5], tokenAddresses.addresses),
           to: parameters[4]
-        }
+        };
       default:
         return {
           token: 'unknown',
           to: 'unknown'
-        }
+        };
     }
-  })(methodName)
+  })(methodName);
 
   switch(eventCode) {
     case 'txSent':
-      return `Sending ${transfer.token} to address: ${transfer.to.substr(0, 6)}...`
+      return `Sending ${transfer.token} to address: ${transfer.to.substr(0, 6)}...`;
     case 'txPending':
-      return `Your ${transfer.token} transfer to address: ${transfer.to.substr(0, 6)}... is pending!`
+      return `Your ${transfer.token} transfer to address: ${transfer.to.substr(0, 6)}... is pending!`;
     case 'txConfirmed':
-      return `Your ${transfer.token} transfer to address ${transfer.to.substr(0, 6)}... is complete! Woohoo!`
+      return `Your ${transfer.token} transfer to address ${transfer.to.substr(0, 6)}... is complete! Woohoo!`;
     case 'txFailed':
-      return `Uh oh something went wrong sending ${transfer.token} to address: ${transfer.to.substr(0, 6)}... Please try again later.`
+      return `Uh oh something went wrong sending ${transfer.token} to address: ${transfer.to.substr(0, 6)}... Please try again later.`;
     default:
-      return undefined
+      return undefined;
   }
 }
 
@@ -129,7 +124,7 @@ function txSwapMsg(eventCode, data) {
     to,
     exchangeAddresses,
     tokenAddresses 
-  } = getTxInfo(data)
+  } = getTxInfo(data);
 
   const exchange = (function(methodName) {
     switch(methodName) {
@@ -137,50 +132,48 @@ function txSwapMsg(eventCode, data) {
         return {
           from: 'ETH',
           to: findTicker(to, exchangeAddresses.addresses)
-        }
+        };
       case 'tokenToEthSwapInput':
         return {
           from: findTicker(to, exchangeAddresses.addresses),
           to: 'ETH'
-        }
+        };
       case 'tokenToTokenSwapInput':
         return {
           from: findTicker(to, exchangeAddresses.addresses),
           to: findTicker(parameters[4], tokenAddresses.addresses)
-        }
+        };
       default:
         return {
           from: 'unknown',
           to: 'unknown'
-        }
+        };
     }
-  })(methodName)
+  })(methodName);
 
   switch(eventCode) {
     case 'txSent':
-      return `Sending ${exchange.from} to ${exchange.to} swap request...`
+      return `Sending ${exchange.from} to ${exchange.to} swap request...`;
     case 'txPending':
-      return `Your swap from ${exchange.from} to ${exchange.to} is pending!`
+      return `Your swap from ${exchange.from} to ${exchange.to} is pending!`;
     case 'txConfirmed':
-      return `Your swap from ${exchange.from} to ${exchange.to} is complete! Woohoo!`
+      return `Your swap from ${exchange.from} to ${exchange.to} is complete! Woohoo!`;
     case 'txFailed':
-      return `Uh oh something went wrong swapping ${exchange.from} to ${exchange.to}. Please try again later.`
+      return `Uh oh something went wrong swapping ${exchange.from} to ${exchange.to}. Please try again later.`;
     default:
-      return undefined
+      return undefined;
   }
 }
 
-// Helpers
-
 function findTicker(tokenAddress, tokenPairs) {
-  return tokenPairs && tokenPairs.find(tokenPair => tokenPair[1].toLowerCase() === tokenAddress.toLowerCase())[0]
+  return tokenPairs && tokenPairs.find(tokenPair => tokenPair[1].toLowerCase() === tokenAddress.toLowerCase())[0];
 }
 
 function getTxInfo({contract, transaction}) {
-  const { methodName, parameters } = contract
-  const { to } = transaction
-  const network = process.env.REACT_APP_NETWORK_ID === '4' ? 'RINKEBY' : 'MAIN'
-  const { exchangeAddresses, tokenAddresses } = addresses[network]
+  const { methodName, parameters } = contract;
+  const { to } = transaction;
+  const network = process.env.REACT_APP_NETWORK_ID === '4' ? 'RINKEBY' : 'MAIN';
+  const { exchangeAddresses, tokenAddresses } = addresses[network];
 
   return {
     methodName,
@@ -188,14 +181,14 @@ function getTxInfo({contract, transaction}) {
     to,
     exchangeAddresses,
     tokenAddresses
-  }
+  };
 }
 
 // Returns initialized assist object if previously initialized.
 // Otherwise will initialize assist with the config object
 function getAssist(web3) {
   if (initializedAssist) {
-    return initializedAssist
+    return initializedAssist;
   }
 
   const assistConfig = {
