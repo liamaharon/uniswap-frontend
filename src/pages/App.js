@@ -33,9 +33,9 @@ class App extends Component {
   }
 
   render() {
-    if (!this.props.initialized) {
-      return <noscript />;
-    }
+    // if (!this.props.initialized) {
+    //   return <noscript />;
+    // }
 
     return (
       <div id="app-container">

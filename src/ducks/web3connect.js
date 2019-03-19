@@ -143,8 +143,9 @@ export const initialize = () => (dispatch, getState) => {
       return;
     }
 
+    await onboardUser().catch(reject);
+
     dispatch({ type: INITIALIZE });
-    reject();
   })
 };
 
@@ -222,7 +223,7 @@ export const sync = () => async (dispatch, getState) => {
     networkId,
     transactions: { pending, confirmed },
   } = getState().web3connect;
-  
+
   await onboardUser(web3)
 
   // Sync Account
