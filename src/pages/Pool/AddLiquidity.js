@@ -12,6 +12,7 @@ import PlusBlue from '../../assets/images/plus-blue.svg';
 import PlusGrey from '../../assets/images/plus-grey.svg';
 import DropdownBlue from "../../assets/images/dropdown-blue.svg";
 import DropupBlue from "../../assets/images/dropup-blue.svg";
+import MetamaskLogo from "../../assets/images/metamask-logo.svg";
 import { getBlockDeadline } from '../../helpers/web3-utils';
 import { retry } from '../../helpers/promise-utils';
 import ModeSelector from './ModeSelector';
@@ -20,6 +21,7 @@ import { decorateContract } from '../../libraries/assist'
 import EXCHANGE_ABI from '../../abi/exchange';
 import "./pool.scss";
 import ReactGA from "react-ga";
+import { onboardUser } from '../../libraries/assist'
 
 const INPUT = 0;
 const OUTPUT = 1;
@@ -399,6 +401,20 @@ class AddLiquidity extends Component {
     )
   }
 
+  renderNotConnected() {
+    const { t } = this.props
+
+    return (
+      <ContextualInfo
+        openDetailsText={t("transactionDetails")}
+        closeDetailsText={t("hideDetails")}
+        contextualInfo={t('Not Connected')}
+        isError={true}
+        renderTransactionDetails={this.renderTransactionDetails}
+      />
+    );
+  }
+
   renderSummary(inputError, outputError) {
     const { t, selectors, exchangeAddresses: { fromToken } } = this.props;
     const {
@@ -567,19 +583,23 @@ class AddLiquidity extends Component {
         <OversizedPanel hideBottom>
           { this.renderInfo() }
         </OversizedPanel>
-        { this.renderSummary(inputError, outputError) }
-        <div className="pool__cta-container">
-          <button
-            className={classnames('pool__cta-btn', {
-              'swap--inactive': !this.props.isConnected,
-              'pool__cta-btn--inactive': !isValid,
-            })}
-            disabled={!isValid}
-            onClick={this.onAddLiquidity}
-          >
-            {t("addLiquidity")}
-          </button>
-        </div>
+        { this.props.isConnected ? this.renderSummary(inputError, outputError) : this.renderNotConnected() }
+        <div className="swap__cta-container">
+            <button
+              className={classnames('swap__cta-btn', {
+                'swap--inactive': !this.props.isConnected,
+              })}
+              // disabled={!isValid}
+              onClick={() => this.props.isConnected ? this.onAddLiquidity() : onboardUser(this.props.web3)}
+            >
+            {!this.props.isConnected && (
+              <div style={{width: '1.33rem', marginRight: '0.5rem'}}>
+                <img src={MetamaskLogo} alt="MetaMask Logo" />
+              </div>
+            )}
+              {this.props.isConnected ? t("addLiquidity") : t("Connect")}
+            </button>
+          </div>
       </div>
     ];
   }

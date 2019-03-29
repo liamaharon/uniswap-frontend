@@ -209,7 +209,7 @@ function getTxInfo({contract, transaction}) {
 
 // Returns initialized assist object if previously initialized.
 // Otherwise will initialize assist with the config object
-function getAssist(web3) {
+export function getAssist(web3) {
   if (initializedAssist) {
     return initializedAssist;
   }

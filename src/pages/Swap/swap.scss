@@ -6,7 +6,7 @@
   background-color: $white;
 
   &--inactive {
-    opacity: .5;
+    // opacity: .5;
   }
 
   &__content {
@@ -60,6 +60,18 @@
   &__cta-btn {
     @extend %primary-button;
     margin: 1rem auto;
+    &.swap--inactive {
+      border: 1px solid #74e56b;
+      background: white;
+      color: #74e56b;
+      transition: background 350ms ease-in-out;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      &:hover {
+        background: #f1fcf0;
+      }
+    }
   }
 
   &__sub-icon {

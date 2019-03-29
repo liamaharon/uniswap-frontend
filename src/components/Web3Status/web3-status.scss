@@ -4,13 +4,18 @@
   @extend %row-nowrap;
   height: 2rem;
   font-size: .9rem;
-  align-items: center;
-  border: 1px solid $mercury-gray;
+  align-items: center;          
   padding: .5rem;
   border-radius: 2rem;
-  color: $dove-gray;
   font-weight: 400;
   box-sizing: border-box;
+  border: 1px solid #282828;
+  color: #282828;
+  
+  &:hover {
+    border: 1px solid #74e56b;
+    color: #74e56b;
+  }
 
   &__identicon {
     height: 1rem;
@@ -36,6 +41,15 @@
     background-color: $zumthor-blue;
     color: $royal-blue;
     border: 1px solid $royal-blue;
+  }
+
+  &.web3-status__connected {
+    border: 1px solid $mercury-gray;
+    color: $dove-gray;
+
+    &:hover {
+      border: 1px solid $mercury-gray;
+    }
   }
 }
 

@@ -8,6 +8,7 @@ import { CSSTransitionGroup } from "react-transition-group";
 import { withNamespaces } from 'react-i18next';
 import './web3-status.scss';
 import Modal from '../Modal';
+import { onboardUser } from '../../libraries/assist'
 
 function getEtherscanLink(tx) {
   return `https://etherscan.io/tx/${tx}`;
@@ -19,6 +20,10 @@ class Web3Status extends Component {
   };
 
   handleClick = () => {
+    if (!this.props.isConnected) {
+      onboardUser(this.props.web3)
+    }
+
     if (this.props.pending.length && !this.state.isShowingModal) {
       this.setState({isShowingModal: true});
     }
@@ -84,7 +89,7 @@ class Web3Status extends Component {
         onClick={this.handleClick}
       >
         <div className="web3-status__text">
-          {hasPendingTransactions ? getPendingText(pending, t("pending")) : getText(address, t("disconnected")) }
+          {hasPendingTransactions ? getPendingText(pending, t("pending")) : getText(address, t("Connect")) }
         </div>
         <div
           className="web3-status__identicon"
@@ -144,6 +149,7 @@ export default connect(
       isConnected: !!(state.web3connect.web3 && state.web3connect.account),
       pending: state.web3connect.transactions.pending,
       confirmed: state.web3connect.transactions.confirmed,
+      web3: state.web3connect.web3
     };
   }
 )(withNamespaces()(Web3Status));

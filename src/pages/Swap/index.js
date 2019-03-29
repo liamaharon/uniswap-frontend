@@ -16,10 +16,11 @@ import DropdownBlue from "../../assets/images/dropdown-blue.svg";
 import DropupBlue from "../../assets/images/dropup-blue.svg";
 import ArrowDownBlue from '../../assets/images/arrow-down-blue.svg';
 import ArrowDownGrey from '../../assets/images/arrow-down-grey.svg';
+import MetamaskLogo from '../../assets/images/metamask-logo.svg';
 import { getBlockDeadline } from '../../helpers/web3-utils';
 import { retry } from '../../helpers/promise-utils';
 import EXCHANGE_ABI from '../../abi/exchange';
-import { decorateContract } from '../../libraries/assist'
+import { decorateContract, onboardUser } from '../../libraries/assist'
 
 import "./swap.scss";
 
@@ -520,7 +521,22 @@ class Swap extends Component {
     }
   };
 
+  renderNotConnected() {
+    const { t } = this.props
+
+    return (
+      <ContextualInfo
+        openDetailsText={t("transactionDetails")}
+        closeDetailsText={t("hideDetails")}
+        contextualInfo={t('Not Connected')}
+        isError={true}
+        renderTransactionDetails={this.renderTransactionDetails}
+      />
+    );
+  }
+
   renderSummary(inputError, outputError) {
+
     const {
       inputValue,
       inputCurrency,
@@ -749,16 +765,21 @@ class Swap extends Component {
             disableUnlock
           />
           { this.renderExchangeRate() }
-          { this.renderSummary(inputError, outputError) }
+          { this.props.isConnected ? this.renderSummary(inputError, outputError) : this.renderNotConnected() }
           <div className="swap__cta-container">
             <button
               className={classnames('swap__cta-btn', {
                 'swap--inactive': !this.props.isConnected,
               })}
-              disabled={!isValid}
-              onClick={this.onSwap}
+              // disabled={!isValid}
+              onClick={() => this.props.isConnected ? this.onSwap() : onboardUser(this.props.web3)}
             >
-              {t("swap")}
+            {!this.props.isConnected && (
+              <div style={{width: '1.33rem', marginRight: '0.5rem'}}>
+                <img src={MetamaskLogo} alt="MetaMask Logo" />
+              </div>
+            )}
+              {this.props.isConnected ? t("swap") : t("Connect")}
             </button>
           </div>
         </div>

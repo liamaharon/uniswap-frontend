@@ -14,11 +14,14 @@ import ContextualInfo from '../../components/ContextualInfo';
 import OversizedPanel from '../../components/OversizedPanel';
 import DropdownBlue from "../../assets/images/dropdown-blue.svg";
 import DropupBlue from "../../assets/images/dropup-blue.svg";
+import MetamaskLogo from "../../assets/images/metamask-logo.svg";
 import ArrowDownBlue from '../../assets/images/arrow-down-blue.svg';
 import ArrowDownGrey from '../../assets/images/arrow-down-grey.svg';
 import { getBlockDeadline } from '../../helpers/web3-utils';
 import { retry } from '../../helpers/promise-utils';
 import EXCHANGE_ABI from '../../abi/exchange';
+import { onboardUser } from '../../libraries/assist'
+
 
 import "./send.scss";
 import MediaQuery from "react-responsive";
@@ -529,6 +532,20 @@ class Send extends Component {
     }
   };
 
+  renderNotConnected() {
+    const { t } = this.props
+
+    return (
+      <ContextualInfo
+        openDetailsText={t("transactionDetails")}
+        closeDetailsText={t("hideDetails")}
+        contextualInfo={t('Not Connected')}
+        isError={true}
+        renderTransactionDetails={this.renderTransactionDetails}
+      />
+    );
+  }
+
   renderSummary(inputError, outputError) {
     const {
       inputValue,
@@ -776,16 +793,21 @@ class Send extends Component {
             onChange={address => this.setState({recipient: address})}
           />
           { this.renderExchangeRate() }
-          { this.renderSummary(inputError, outputError) }
+          { this.props.isConnected ? this.renderSummary(inputError, outputError) : this.renderNotConnected() }
           <div className="swap__cta-container">
             <button
               className={classnames('swap__cta-btn', {
                 'swap--inactive': !this.props.isConnected,
               })}
-              disabled={!isValid}
-              onClick={this.onSend}
+              // disabled={!isValid}
+              onClick={() => this.props.isConnected ? this.onSend() : onboardUser(this.props.web3)}
             >
-              {t("send")}
+            {!this.props.isConnected && (
+              <div style={{width: '1.33rem', marginRight: '0.5rem'}}>
+                <img src={MetamaskLogo} alt="MetaMask Logo" />
+              </div>
+            )}
+              {this.props.isConnected ? t("send") : t("Connect")}
             </button>
           </div>
         </div>

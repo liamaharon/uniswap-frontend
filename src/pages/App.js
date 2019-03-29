@@ -10,11 +10,19 @@ import Send from './Send';
 import Pool from './Pool';
 
 import './App.scss';
+import { getAssist } from '../libraries/assist';
 
 class App extends Component {
   componentWillMount() {
     const { initialize, startWatching} = this.props;
-    initialize().then(startWatching);
+    initialize().then(() => {
+      if (this.props.web3) {
+        console.log('calling start watchinh=g')
+        startWatching()
+      }
+
+      getAssist(this.props.web3)
+    }).catch(console.log);
   };
 
   componentWillUpdate() {

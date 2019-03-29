@@ -5,6 +5,7 @@ import { withRouter } from 'react-router-dom';
 import { withNamespaces } from 'react-i18next';
 import {selectors, addPendingTx} from "../../ducks/web3connect";
 import classnames from "classnames";
+import MetamaskLogo from "../../assets/images/metamask-logo.svg";
 import NavigationTabs from "../../components/NavigationTabs";
 import ModeSelector from "./ModeSelector";
 import AddressInputPanel from "../../components/AddressInputPanel";
@@ -13,6 +14,7 @@ import FACTORY_ABI from "../../abi/factory";
 import { decorateContract } from '../../libraries/assist'
 import {addExchange} from "../../ducks/addresses";
 import ReactGA from "react-ga";
+import { onboardUser } from '../../libraries/assist'
 
 class CreateExchange extends Component {
   static propTypes = {
@@ -137,6 +139,16 @@ class CreateExchange extends Component {
     })
   };
 
+  renderNotConnected() {
+    const { t } = this.props
+
+    return (
+      <div className="create-exchange__summary-panel">
+          <div className="create-exchange__summary-text create-exchange--error">{t("Not Connected")}</div>
+        </div>
+    );
+  }
+
   renderSummary() {
     const { tokenAddress } = this.state;
     const { errorMessage } = this.validate();
@@ -203,18 +215,23 @@ class CreateExchange extends Component {
             </div>
           </div>
         </OversizedPanel>
-        { this.renderSummary() }
-        <div className="pool__cta-container">
-          <button
-            className={classnames('pool__cta-btn', {
-              'swap--inactive': !isConnected,
-            })}
-            disabled={!isValid}
-            onClick={this.onCreateExchange}
-          >
-            {t("createExchange")}
-          </button>
-        </div>
+        { this.props.isConnected ? this.renderSummary() : this.renderNotConnected() }
+        <div className="swap__cta-container">
+            <button
+              className={classnames('swap__cta-btn', {
+                'swap--inactive': !this.props.isConnected,
+              })}
+              // disabled={!isValid}
+              onClick={() => this.props.isConnected ? this.onCreateExchange() : onboardUser(this.props.web3)}
+            >
+            {!this.props.isConnected && (
+              <div style={{width: '1.33rem', marginRight: '0.5rem'}}>
+                <img src={MetamaskLogo} alt="MetaMask Logo" />
+              </div>
+            )}
+              {this.props.isConnected ? t("createExchange") : t("Connect")}
+            </button>
+          </div>
       </div>
     );
   }

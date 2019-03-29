@@ -143,7 +143,9 @@ export const initialize = () => (dispatch, getState) => {
       return;
     }
 
-    await onboardUser().catch(reject);
+    resolve()
+
+    // await onboardUser().catch(reject);
 
     dispatch({ type: INITIALIZE });
   })
@@ -216,6 +218,7 @@ export const updateApprovals = ({ tokenAddress, tokenOwner, spender, balance }) 
 export const sync = () => async (dispatch, getState) => {
   const { getBalance, getApprovals } = dispatch(selectors());
   const web3 = await dispatch(initialize());
+  if (!web3) return
   const {
     account,
     watched,
@@ -224,7 +227,7 @@ export const sync = () => async (dispatch, getState) => {
     transactions: { pending, confirmed },
   } = getState().web3connect;
 
-  await onboardUser(web3)
+  // await onboardUser(web3)
 
   // Sync Account
   const accounts = await web3.eth.getAccounts();
