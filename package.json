@@ -6,7 +6,7 @@
   "dependencies": {
     "axios": "^0.18.0",
     "bignumber.js": "^7.2.1",
-    "bnc-assist": "^0.4.0",
+    "bnc-assist": "^0.8.3",
     "classnames": "^2.2.6",
     "d3": "^4.13.0",
     "deep-equal": "^1.0.1",
