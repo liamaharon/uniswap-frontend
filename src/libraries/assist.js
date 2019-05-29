@@ -215,7 +215,7 @@ export function getAssist(web3) {
   }
 
   const assistConfig = {
-    networkId: process.env.REACT_APP_NETWORK_ID || 1,
+    networkId: Number(process.env.REACT_APP_NETWORK_ID) || 1,
     dappId: '12153f55-f29e-4f11-aa07-90f10da5d778',
     web3,
     messages: {
