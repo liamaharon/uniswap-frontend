@@ -22,7 +22,7 @@ class App extends Component {
       }
 
       getAssist(this.props.web3)
-    }).catch(console.log);
+    }).catch((e) => {throw e});
   };
 
   componentWillUpdate() {
